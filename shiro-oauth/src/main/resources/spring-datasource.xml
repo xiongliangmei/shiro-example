@@ -51,4 +51,5 @@
     <!--开启事务注解-->
     <tx:annotation-driven  transaction-manager="transactionManager" />
 
+    <bean class="com.gitub.xl137010393.listener.ApplicationContextListener"></bean>
 </beans>
