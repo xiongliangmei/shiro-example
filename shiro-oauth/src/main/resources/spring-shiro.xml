@@ -6,55 +6,30 @@
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
     <description> shiro 配置</description>
 
-    <!--1,配置SecurityManager-->
+    <!--开启shiro 注解-->
+    <bean id="advisorAutoProxyCreator" class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator">
+        <property name="proxyTargetClass" value="true"></property>
+    </bean>
+
+    <!--注入自定义注解Realm-->
+    <bean id="shiroRealm" class="com.gitub.xl137010393.realm.ShiroRealm"></bean>
+
+    <!--安全管理器-->
     <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
-
-    </bean>
-    <!--2.配置cacheManager-->
-    <bean class="org.apache.shiro.cache.MemoryConstrainedCacheManager"></bean>
-
-    <!--3.配置authenticator-->
-    <bean class="org.apache.shiro.authc.pam.ModularRealmAuthenticator">
-        <property name="authenticationStrategy">
-            <bean class="org.apache.shiro.authc.pam.FirstSuccessfulStrategy"></bean>
-        </property>
-    </bean>
-
-    <!--4.配置realm -->
-    <bean class="com.gitub.xl137010393.realm.ShiroRealm">
-        <property name="credentialsMatcher">
-            <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
-                <property name="hashAlgorithmName" value="MD5"></property>
-                <property name="hashIterations" value="1024"></property>
-            </bean>
-        </property>
-    </bean>
-    <!--5.配置lifecycleBeanPostProcessor 可以自动的来调用配置在Spring IOC 容器中的生命周期方法-->
-   <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"></bean>
-    <!--6.启动IOC容器中使用shiro 的注解，但必须配置lifecycleBeanPostProcessor 之后,才能使用-->
-    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor"></bean>
-
-    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
-        <property name="securityManager" ref="securityManager"></property>
+        <property name="realm" ref="shiroRealm"></property>
     </bean>
 
     <!--配置shiroFilter-->
     <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
         <property name="securityManager" ref="securityManager"></property>
         <property name="loginUrl" value="/login.jsp"></property>
-        <!--这里直接用Controller里面跳转到成功界面，所以没设置参数-->
-        <property name="successUrl" value="/"></property>
-        <property name="unauthorizedUrl" value="/"></property>
-        <!-- 配置哪些页面需要受保护. 以及访问这些页面需要的权限.
-       1). anon(anonymous) 可以被匿名访问 2). authc(authentication)
-       必须认证(即登录)后才可能访问的页面. 3). logout 登出.4)等等其他的，没用到 我就不写出来了 -->
+        <property name="successUrl" value="/index.jsp"></property>
         <property name="filterChainDefinitions">
             <value>
-                /login.jsp=anon
-                /login=anon
-                #表示其他所有的url都需要认证
-                /** =authc
+                /share = authc
             </value>
         </property>
     </bean>
+
+
 </beans>

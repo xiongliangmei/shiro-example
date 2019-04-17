@@ -21,7 +21,7 @@ public class ShiroRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        Object principal = principals.getPrimaryPrincipal();
+/*        Object principal = principals.getPrimaryPrincipal();
 
         Set<String> roles = new HashSet<>();
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
@@ -33,7 +33,15 @@ public class ShiroRealm extends AuthorizingRealm {
             roles.add("user");
             info.setRoles(roles);
             info.addStringPermissions(Arrays.asList("user:*"));
-        }
+        }*/
+        String username = (String) principals.getPrimaryPrincipal();
+        Set<String> permissionSet = new HashSet<>();
+        permissionSet.add("user:add");
+        permissionSet.add("user:delete");
+
+        SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+        info.addStringPermissions(permissionSet);
+        info.addRole("admin");
         return info;
     }
 
@@ -45,20 +53,17 @@ public class ShiroRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
-        UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;
-        String username = token.getUsername();
-        String principal = username;
-        String credentials = "";
-
-        if ("admin".equalsIgnoreCase(username)){
-            credentials = "038bdaf98f2037b31f1e75b5b4c9b26e";
-        }else if ("user".equalsIgnoreCase(username)){
-            credentials ="";
+ /*       UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;
+        if ("admin".equals(token.getUsername())&&"123456".equals(token.getPassword())){
+            SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(token.getUsername(),token.getPassword(),getName());
+            return info;
+        }*/
+        String useranme = (String) authenticationToken.getPrincipal();
+        if ("".equals(useranme)){
+            return null;
         }
-        String realmName = getName();
-        ByteSource salt = ByteSource.Util.bytes(username);
-        SimpleAuthenticationInfo info = null;
-        info = new SimpleAuthenticationInfo(principal,credentials,salt,realmName);
+        SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(useranme,"123456",this.getName());
+
         return info;
     }
 }
